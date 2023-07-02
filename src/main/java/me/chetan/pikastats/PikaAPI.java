@@ -20,14 +20,32 @@ import java.net.URL;
 
 public class PikaAPI {
     public static final String right_point_tri="\u25B6 ";
-    public static JsonObject bedwars_lifetime(String player_name){
-        return getJson("https://stats.pika-network.net/api/profile/"+player_name+"/leaderboard?type=bedwars&interval=total&mode=ALL_MODES");
+    public static JsonObject bedwars(String player_name,String interval,String mode){
+        return getJson("https://stats.pika-network.net/api/profile/"+player_name+"/leaderboard?type=bedwars&interval="+interval+"&mode="+mode);
     }
 
-    public static void handleArgs(String player_name,String gamemode,String time){
+    public static void handleArgs(String player_name,String gamemode,String time,String type){
         if(gamemode.equalsIgnoreCase("bw") || gamemode.equalsIgnoreCase("bws") || gamemode.equalsIgnoreCase("bedwar") || gamemode.equalsIgnoreCase("bedwars")){
-            if(time.equalsIgnoreCase("lifetime")){
-                iterateListSend(bedwars_lifetime(player_name),"bw");
+            String mode="ALL_MODES";
+
+            if(type.equalsIgnoreCase("solo") || type.equalsIgnoreCase("one") || type.equalsIgnoreCase("1")){
+                mode="SOLO";
+            }else if(type.equalsIgnoreCase("dou") || type.equalsIgnoreCase("doubles") || type.equalsIgnoreCase("double") || type.equalsIgnoreCase("duo") || type.equalsIgnoreCase("two") || type.equalsIgnoreCase("2")){
+                mode="DOUBLES";
+            }else if(type.equalsIgnoreCase("trio") || type.equalsIgnoreCase("tri") || type.equalsIgnoreCase("triple") || type.equalsIgnoreCase("triples") || type.equalsIgnoreCase("3")){
+                mode="TRIPLES";
+            }else if(type.equalsIgnoreCase("quad") || type.equalsIgnoreCase("4")){
+                mode="QUAD";
+            }
+
+            if(time.equalsIgnoreCase("lifetime") || time.equalsIgnoreCase("lt") || time.equalsIgnoreCase("full") || time.equalsIgnoreCase("life")){
+                iterateListSend(bedwars(player_name,"total",mode),"bw");
+            }else if(time.equalsIgnoreCase("monthly") || time.equalsIgnoreCase("month")){
+                iterateListSend(bedwars(player_name,"monthly",mode),"bw");
+            }else if(time.equalsIgnoreCase("weekly") || time.equalsIgnoreCase("week")){
+                iterateListSend(bedwars(player_name,"weekly",mode),"bw");
+            }else{
+                iterateListSend(bedwars(player_name,"total",mode),"bw");
             }
         }
     }
@@ -36,7 +54,16 @@ public class PikaAPI {
         handleArgs(player_name,gamemode,"lifetime");
     }
 
+    public static void handleArgs(String player_name, String gamemode,String time){
+        handleArgs(player_name,gamemode,time,"ALL_MODES");
+    }
+
     public static void help(){
+        sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.DARK_RED+" Use /pikastats <player_name> <gamemode> [weekly/monthly/lifetime] [all/solo/dou/trio/quad]");
+        sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.RED+" NOTE:- <> means mandatory and [] means optional");
+        sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.GREEN+"e.g. /pikastats Chetan0402 bw");
+        sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.GREEN+"e.g. /pikastats Chetan0402 bw weekly");
+        sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.GREEN+"e.g. /pikastats Chetan0402 bw weekly all");
     }
 
     public static void sendText(String text){
@@ -103,13 +130,12 @@ public class PikaAPI {
     }
 
     public static void iterateListSend(JsonObject main,String gamemode){
-        System.out.println(main);
-        System.out.println("iter triggered");
+        sendText("");
         for(String field:PikaStatsMod.config.getGameConfig(gamemode)){
-            System.out.println(field);
             JsonObject field_data = getField(main,field);
             sendStatInfo(field,field_data.get("value").getAsString(),field_data.get("place").getAsString());
         }
+        sendText("");
     }
 }
 

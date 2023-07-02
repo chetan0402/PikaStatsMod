@@ -49,6 +49,11 @@ public class ConfigCommand extends CommandBase {
             sendText(new ChatComponentText(EnumChatFormatting.YELLOW+"Bedwars").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/statconfig bw"))));
         }else if(args.length==1){
             if(args[0].equalsIgnoreCase("bw")){
+                sendText("");
+                sendText(EnumChatFormatting.YELLOW+right_point_tri+" PikaStatsMod ");
+                sendText(EnumChatFormatting.GREEN+" Click the field you want to change...");
+                sendText(EnumChatFormatting.GREEN+" Put the number you want it to be placed instead of...");
+                sendText("");
                 int i=0;
                 for(String field:PikaStatsMod.config.getGameConfig("bw")){
                     sendTextClickHover(
@@ -57,6 +62,7 @@ public class ConfigCommand extends CommandBase {
                             ClickEvent.Action.SUGGEST_COMMAND,"/statconfig bw "+field+" "+i);
                     i=i+1;
                 }
+                sendText("");
             }
         }else if(args.length==3){
             if(args[0].equalsIgnoreCase("bw")){

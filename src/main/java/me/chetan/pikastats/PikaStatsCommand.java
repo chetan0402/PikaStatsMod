@@ -24,6 +24,7 @@ public class PikaStatsCommand extends CommandBase{
     public List<String> getCommandAliases() {
         List<String> aliases=new ArrayList<>();
         aliases.add("ps");
+        aliases.add("pikastats");
         return aliases;
     }
 
@@ -45,6 +46,8 @@ public class PikaStatsCommand extends CommandBase{
             handleArgs(args[0],args[1]);
         } else if(args.length==3){
             handleArgs(args[0],args[1],args[2]);
+        } else if(args.length==4){
+            handleArgs(args[0],args[1],args[2],args[3]);
         } else{
             help();
         }
