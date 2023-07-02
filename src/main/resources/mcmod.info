@@ -1,0 +1,17 @@
+[
+  {
+    "modid": "${modid}",
+    "name": "Pika-Network Stats Mod",
+    "description": "Show Stats of players using /showstats",
+    "version": "${version}",
+    "mcversion": "1.8.9",
+    "updateUrl": "",
+    "authorList": [
+      "Chetan0402"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
