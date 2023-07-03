@@ -2,7 +2,7 @@
   {
     "modid": "${modid}",
     "name": "Pika-Network Stats Mod",
-    "description": "Show Stats of players using /showstats",
+    "description": "Show Stats of players using /pikastats",
     "version": "${version}",
     "mcversion": "1.8.9",
     "updateUrl": "",
