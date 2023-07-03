@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -17,14 +18,35 @@ public class Config {
     private File dataDir;
     private final File orderList;
     private JsonObject each_order=new JsonObject();
+    public ArrayList<String> bw_options=new ArrayList<>();
     public Config(){
         this.dataDir= new File(Minecraft.getMinecraft().mcDataDir.getAbsolutePath()+"/config");
         this.orderList=new File(dataDir.getAbsolutePath()+"/PikaStatOrderList.DoNotDelete");
+        initVar();
+
+
         if(!this.orderList.exists()){
             try{
                 init();
             } catch(IOException e){
-                PikaStatsMod.logger.error("Error in creating a new orderList file",e);
+                PikaStatsMod.logger.error("Error in creating a new orderList file.",e);
+            }
+        }else{
+            String version=null;
+            try {
+                version=getVersion();
+            } catch (IOException e) {
+                PikaStatsMod.logger.error("Error reading file for version.",e);
+                e.printStackTrace();
+            }
+            if(version==null || !version.equals("1.0.0")){
+                this.orderList.delete();
+                try{
+                    init();
+                } catch(IOException e){
+                    PikaStatsMod.logger.error("Error in creating a new orderList file.",e);
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -49,9 +71,8 @@ public class Config {
         try {
             String main_string=new String(Files.readAllBytes(this.orderList.toPath()));
             JsonParser parser=new JsonParser();
-            JsonObject main_order=parser.parse(main_string).getAsJsonObject();
-            this.each_order=main_order;
-            String order_string=main_order.get(gamemode).getAsString();
+            this.each_order=parser.parse(main_string).getAsJsonObject();
+            String order_string=each_order.get(gamemode).getAsString();
             order_string=order_string.substring(1,order_string.length()-1);
             LinkedList<String> list=new LinkedList<>(Arrays.asList(order_string.split(", ")));
             int i=0;
@@ -66,7 +87,7 @@ public class Config {
         } catch (IOException e) {
             error("Couldn't read the config file.");
         } catch(JsonSyntaxException e){
-            error("Corrupte or old config.");
+            error("Corrupted or old config.");
             try {
                 init();
             } catch (IOException ex) {
@@ -112,5 +133,42 @@ public class Config {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void toggleStat(String gamemode,String stat){
+        LinkedList<String> list=getGameConfig(gamemode);
+        if(list.contains(stat)){
+            list.remove(stat);
+        }else{
+            list.add(stat);
+        }
+        each_order.remove(gamemode);
+        each_order.addProperty(gamemode,String.valueOf(list));
+        writeToFile();
+    }
+
+    public String getVersion() throws IOException {
+        String main_string=new String(Files.readAllBytes(this.orderList.toPath()));
+        JsonParser parser=new JsonParser();
+        this.each_order= parser.parse(main_string).getAsJsonObject();
+        String version= String.valueOf(each_order.get("version"));
+        return version;
+    }
+
+    public void initVar(){
+        this.bw_options.add("Final kills");
+        this.bw_options.add("Kills");
+        this.bw_options.add("Highest winstreak reached");
+        this.bw_options.add("Beds destroyed");
+        this.bw_options.add("Wins");
+        this.bw_options.add("Losses");
+        this.bw_options.add("Games played");
+        this.bw_options.add("Deaths");
+        this.bw_options.add("Bow kills");
+        this.bw_options.add("Arrows shot");
+        this.bw_options.add("Arrows hit");
+        this.bw_options.add("Melee kills");
+        this.bw_options.add("Void kills");
+
     }
 }

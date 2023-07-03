@@ -150,170 +150,60 @@ public class PikaAPI {
         }
         sendText("");
     }
-}
 
+    public static void sendOrderChange(String gamemode){
+        sendText("");
+        sendText(EnumChatFormatting.YELLOW+right_point_tri+" PikaStatsMod ");
+        sendText(EnumChatFormatting.GREEN+" Click the field to change it's position...");
+        sendText(EnumChatFormatting.GREEN+" Put the number of it's new position...");
+        sendText("");
+        int i=0;
+        for(String field:PikaStatsMod.config.getGameConfig(gamemode)){
+            sendTextClickHover(
+                    EnumChatFormatting.YELLOW+PikaAPI.right_point_tri+i+". "+field+" ",
+                    HoverEvent.Action.SHOW_TEXT,"Click to change it's order..",
+                    ClickEvent.Action.SUGGEST_COMMAND,"/statconfig "+gamemode+" \""+field+"\" "+i);
+            i=i+1;
+        }
+        sendText("");
+    }
 
-/*
-* {
-  "Bow kills": {
-    "metadata": {
-      "total": 122887
-    },
-    "entries": [
-      {
-        "place": 40616,
-        "value": "3",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Kills": {
-    "metadata": {
-      "total": 1440483
-    },
-    "entries": [
-      {
-        "place": 5656,
-        "value": "6677",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Games played": {
-    "metadata": {
-      "total": 1725032
-    },
-    "entries": [
-      {
-        "place": 5204,
-        "value": "2541",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Arrows shot": {
-    "metadata": {
-      "total": 518614
-    },
-    "entries": [
-      {
-        "place": 37762,
-        "value": "358",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Highest winstreak reached": {
-    "metadata": {
-      "total": 358525
-    },
-    "entries": [
-      {
-        "place": 4357,
-        "value": "31",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Beds destroyed": {
-    "metadata": {
-      "total": 952549
-    },
-    "entries": [
-      {
-        "place": 8870,
-        "value": "1261",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Losses": {
-    "metadata": {
-      "total": 1539383
-    },
-    "entries": [
-      {
-        "place": 12152,
-        "value": "1165",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Arrows hit": {
-    "metadata": {
-      "total": 438952
-    },
-    "entries": [
-      {
-        "place": 51665,
-        "value": "63",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Melee kills": {
-    "metadata": {
-      "total": 820382
-    },
-    "entries": [
-      {
-        "place": 12773,
-        "value": "2353",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Final kills": {
-    "metadata": {
-      "total": 1064665
-    },
-    "entries": [
-      {
-        "place": 5217,
-        "value": "2351",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Deaths": {
-    "metadata": {
-      "total": 1599061
-    },
-    "entries": [
-      {
-        "place": 7064,
-        "value": "10161",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Void kills": {
-    "metadata": {
-      "total": 1192556
-    },
-    "entries": [
-      {
-        "place": 4870,
-        "value": "2322",
-        "id": "Chetan0402"
-      }
-    ]
-  },
-  "Wins": {
-    "metadata": {
-      "total": 847656
-    },
-    "entries": [
-      {
-        "place": 2465,
-        "value": "906",
-        "id": "Chetan0402"
-      }
-    ]
-  }
+    public static void sendVisiChange(String gamemode){
+        sendText("");
+        sendText(EnumChatFormatting.YELLOW+" Shown");
+        for(String stat:PikaStatsMod.config.getGameConfig(gamemode)){
+            String cmd;
+            if(stat.split(" ").length==1){
+                cmd="/statsconfig visibility "+gamemode+" "+stat;
+            }else{
+                cmd="/statsconfig visibility "+gamemode+" \""+stat+"\"";
+            }
+            sendTextClickHover(
+                    EnumChatFormatting.GREEN+right_point_tri+" "+stat,
+                    HoverEvent.Action.SHOW_TEXT,
+                    "Click to hide",
+                    ClickEvent.Action.RUN_COMMAND,
+                    cmd
+            );
+        }
+        sendText(EnumChatFormatting.YELLOW+" Hidden");
+        for(String stat:PikaStatsMod.config.bw_options){
+            if(!PikaStatsMod.config.getGameConfig(gamemode).contains(stat)){
+                String cmd;
+                if(stat.split(" ").length==1){
+                    cmd="/statsconfig visibility "+gamemode+" "+stat;
+                }else{
+                    cmd="/statsconfig visibility "+gamemode+" \""+stat+"\"";
+                }
+                sendTextClickHover(
+                        EnumChatFormatting.GRAY+right_point_tri+" "+stat,
+                        HoverEvent.Action.SHOW_TEXT,
+                        "Click to show",
+                        ClickEvent.Action.RUN_COMMAND,
+                        cmd
+                );
+            }
+        }
+        sendText("");
+    }
 }
-*
-*
-*
-* {"Bow kills":{"metadata":{"total":122887},"entries":[{"place":40616,"value":"3","id":"Chetan0402"}]},"Kills":{"metadata":{"total":1440483},"entries":[{"place":5656,"value":"6677","id":"Chetan0402"}]},"Games played":{"metadata":{"total":1725032},"entries":[{"place":5204,"value":"2541","id":"Chetan0402"}]},"Arrows shot":{"metadata":{"total":518614},"entries":[{"place":37762,"value":"358","id":"Chetan0402"}]},"Highest winstreak reached":{"metadata":{"total":358525},"entries":[{"place":4357,"value":"31","id":"Chetan0402"}]},"Beds destroyed":{"metadata":{"total":952549},"entries":[{"place":8870,"value":"1261","id":"Chetan0402"}]},"Losses":{"metadata":{"total":1539383},"entries":[{"place":12152,"value":"1165","id":"Chetan0402"}]},"Arrows hit":{"metadata":{"total":438952},"entries":[{"place":51665,"value":"63","id":"Chetan0402"}]},"Melee kills":{"metadata":{"total":820382},"entries":[{"place":12773,"value":"2353","id":"Chetan0402"}]},"Final kills":{"metadata":{"total":1064665},"entries":[{"place":5217,"value":"2351","id":"Chetan0402"}]},"Deaths":{"metadata":{"total":1599061},"entries":[{"place":7064,"value":"10161","id":"Chetan0402"}]},"Void kills":{"metadata":{"total":1192556},"entries":[{"place":4870,"value":"2322","id":"Chetan0402"}]},"Wins":{"metadata":{"total":847656},"entries":[{"place":2465,"value":"906","id":"Chetan0402"}]}}
-* */
