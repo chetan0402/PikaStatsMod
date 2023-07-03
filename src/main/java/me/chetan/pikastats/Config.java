@@ -37,7 +37,11 @@ public class Config {
         bw_order.add("Highest winstreak reached");
         bw_order.add("Beds destroyed");
         bw_order.add("Wins");
+        bw_order.add("Losses");
+        bw_order.add("Games played");
+        bw_order.add("Deaths");
         each_order.addProperty("bw", String.valueOf(bw_order));
+        each_order.addProperty("version","1.0.0");
         writeToFile();
     }
 
@@ -49,7 +53,7 @@ public class Config {
             this.each_order=main_order;
             String order_string=main_order.get(gamemode).getAsString();
             order_string=order_string.substring(1,order_string.length()-1);
-            LinkedList<String> list=new LinkedList<>(Arrays.asList(order_string.split(",")));
+            LinkedList<String> list=new LinkedList<>(Arrays.asList(order_string.split(", ")));
             int i=0;
             for(String ele:list) {
                 if(ele.charAt(0)==' '){
@@ -80,16 +84,16 @@ public class Config {
         }
     }
 
-    public void updateOrder(String gamemode,String from,int to){
+    public boolean updateOrder(String gamemode,String from,int to){
         LinkedList<String> list=getGameConfig(gamemode);
         if(to>=list.size()){
             error("Not a valid Integer input...");
-            return;
+            return false;
         }
         int from_index=list.indexOf(from);
         if(from_index == -1){
             error("Not a valid Field...");
-            return;
+            return false;
         }
         String to_field=list.get(to);
         list.set(from_index,to_field);
@@ -97,5 +101,16 @@ public class Config {
         each_order.remove(gamemode);
         each_order.addProperty(gamemode,list.toString());
         writeToFile();
+        return true;
+    }
+
+    public boolean updateOrder(String gamemode,String from,String to){
+        try{
+            return updateOrder(gamemode,from,Integer.parseInt(to));
+        }catch(NumberFormatException e){
+            error(to+" is not an integer");
+            e.printStackTrace();
+        }
+        return false;
     }
 }

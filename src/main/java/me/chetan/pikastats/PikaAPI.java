@@ -21,7 +21,20 @@ import java.net.URL;
 public class PikaAPI {
     public static final String right_point_tri="\u25B6 ";
     public static JsonObject bedwars(String player_name,String interval,String mode){
-        return getJson("https://stats.pika-network.net/api/profile/"+player_name+"/leaderboard?type=bedwars&interval="+interval+"&mode="+mode);
+        boolean control=true;
+        JsonObject to_return=null;
+        int i=0;
+        while(control){
+            to_return=getJson("https://stats.pika-network.net/api/profile/"+player_name+"/leaderboard?type=bedwars&interval="+interval+"&mode="+mode);
+            if(to_return!=null){
+                control=false;
+            }
+            i=i+1;
+            if(i==5){
+                control=false;
+            }
+        }
+        return to_return;
     }
 
     public static void handleArgs(String player_name,String gamemode,String time,String type){
