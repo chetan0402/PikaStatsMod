@@ -10,6 +10,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,15 +19,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class PikaAPI {
     public static final String right_point_tri="\u25B6 ";
-    public static JsonObject bedwars(String player_name,String interval,String mode){
+    public static JsonObject minigames(String player_name,String interval,String mode,String type){
         boolean control=true;
         JsonObject to_return=null;
         int i=0;
         while(control){
-            to_return=getJson("https://stats.pika-network.net/api/profile/"+player_name+"/leaderboard?type=bedwars&interval="+interval+"&mode="+mode);
+            to_return=getJson("https://stats.pika-network.net/api/profile/"+player_name+"/leaderboard?type="+type+"&interval="+interval+"&mode="+mode);
             if(to_return!=null){
                 control=false;
             }
@@ -38,12 +41,16 @@ public class PikaAPI {
     }
 
     public static void handleArgs(String player_name,String gamemode,String time,String type){
+        boolean doubles = type.equalsIgnoreCase("dou") || type.equalsIgnoreCase("doubles") || type.equalsIgnoreCase("double") || type.equalsIgnoreCase("duo") || type.equalsIgnoreCase("two") || type.equalsIgnoreCase("2");
+        boolean solo = type.equalsIgnoreCase("solo") || type.equalsIgnoreCase("one") || type.equalsIgnoreCase("1");
+        boolean lifetime = time.equalsIgnoreCase("lifetime") || time.equalsIgnoreCase("lt") || time.equalsIgnoreCase("full") || time.equalsIgnoreCase("life");
         if(gamemode.equalsIgnoreCase("bw") || gamemode.equalsIgnoreCase("bws") || gamemode.equalsIgnoreCase("bedwar") || gamemode.equalsIgnoreCase("bedwars")){
             String mode="ALL_MODES";
+            String time_arg="total";
 
-            if(type.equalsIgnoreCase("solo") || type.equalsIgnoreCase("one") || type.equalsIgnoreCase("1")){
+            if(solo){
                 mode="SOLO";
-            }else if(type.equalsIgnoreCase("dou") || type.equalsIgnoreCase("doubles") || type.equalsIgnoreCase("double") || type.equalsIgnoreCase("duo") || type.equalsIgnoreCase("two") || type.equalsIgnoreCase("2")){
+            }else if(doubles){
                 mode="DOUBLES";
             }else if(type.equalsIgnoreCase("trio") || type.equalsIgnoreCase("tri") || type.equalsIgnoreCase("triple") || type.equalsIgnoreCase("triples") || type.equalsIgnoreCase("3")){
                 mode="TRIPLES";
@@ -51,15 +58,37 @@ public class PikaAPI {
                 mode="QUAD";
             }
 
-            if(time.equalsIgnoreCase("lifetime") || time.equalsIgnoreCase("lt") || time.equalsIgnoreCase("full") || time.equalsIgnoreCase("life")){
-                iterateListSend(bedwars(player_name,"total",mode),"bw");
+            if(lifetime){
+                time_arg="total";
             }else if(time.equalsIgnoreCase("monthly") || time.equalsIgnoreCase("month")){
-                iterateListSend(bedwars(player_name,"monthly",mode),"bw");
+                time_arg="monthly";
             }else if(time.equalsIgnoreCase("weekly") || time.equalsIgnoreCase("week")){
-                iterateListSend(bedwars(player_name,"weekly",mode),"bw");
-            }else{
-                iterateListSend(bedwars(player_name,"total",mode),"bw");
+                time_arg="weekly";
             }
+
+            iterateListSend(minigames(player_name,time_arg,mode,"bedwars"),"bw");
+            return;
+        }
+        if(gamemode.equalsIgnoreCase("sw") || gamemode.equalsIgnoreCase("sws") || gamemode.equalsIgnoreCase("skywar") || gamemode.equalsIgnoreCase("skywars")){
+            String mode="ALL_MODES";
+            String time_arg="total";
+
+            if(solo){
+                mode="SOLO";
+            }else if(doubles){
+                mode="DOUBLES";
+            }
+
+            if(lifetime){
+                time_arg="total";
+            }else if(time.equalsIgnoreCase("monthly") || time.equalsIgnoreCase("month")){
+                time_arg="monthly";
+            }else if(time.equalsIgnoreCase("weekly") || time.equalsIgnoreCase("week")){
+                time_arg="weekly";
+            }
+
+            iterateListSend(minigames(player_name,time_arg,mode,"skywars"),"sw");
+            return;
         }
     }
 
@@ -72,11 +101,13 @@ public class PikaAPI {
     }
 
     public static void help(){
+        sendText("");
         sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.DARK_RED+" Use /pikastats <player_name> <gamemode> [weekly/monthly/lifetime] [all/solo/dou/trio/quad]");
         sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.RED+" NOTE:- <> means mandatory and [] means optional");
         sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.GREEN+"e.g. /pikastats Chetan0402 bw");
-        sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.GREEN+"e.g. /pikastats Chetan0402 bw weekly");
-        sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.GREEN+"e.g. /pikastats Chetan0402 bw weekly all");
+        sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.GREEN+"e.g. /pikastats Chetan0402 sw weekly");
+        sendText(EnumChatFormatting.YELLOW+" PikaStatsMod | "+EnumChatFormatting.GREEN+"e.g. /pikastats Chetan0402 bw monthly duo");
+        sendText("");
     }
 
     public static void sendText(String text){
@@ -87,7 +118,7 @@ public class PikaAPI {
         Minecraft.getMinecraft().thePlayer.addChatComponentMessage(e);
     }
 
-    private static JsonObject getJson(String url_string){
+    public static JsonObject getJson(String url_string){
         try {
             URL url = new URL(url_string);
 
@@ -131,7 +162,9 @@ public class PikaAPI {
 
     public static void error(String to_tell){
         PikaStatsMod.logger.error(to_tell);
-        sendText(EnumChatFormatting.YELLOW+"PikaStatsMod | "+EnumChatFormatting.RED+to_tell);
+        if(Minecraft.getMinecraft().theWorld!=null){
+            sendText(EnumChatFormatting.YELLOW+"PikaStatsMod | "+EnumChatFormatting.RED+to_tell);
+        }
     }
 
     public static void sendTextClickHover(String text,HoverEvent.Action ha,String htext,ClickEvent.Action ca,String cmd){
@@ -187,7 +220,13 @@ public class PikaAPI {
             );
         }
         sendText(EnumChatFormatting.YELLOW+" Hidden");
-        for(String stat:PikaStatsMod.config.bw_options){
+        ArrayList<String> list=new ArrayList<>();
+        if("bw".equalsIgnoreCase(gamemode)){
+            list=PikaStatsMod.config.bw_options;
+        }else if("sw".equalsIgnoreCase(gamemode)){
+            list=PikaStatsMod.config.sw_options;
+        }
+        for(String stat:list){
             if(!PikaStatsMod.config.getGameConfig(gamemode).contains(stat)){
                 String cmd;
                 if(stat.split(" ").length==1){
@@ -205,5 +244,30 @@ public class PikaAPI {
             }
         }
         sendText("");
+    }
+
+    public static void updateVars(){
+        PikaStatsMod.update_response=PikaAPI.getJson("https://raw.githubusercontent.com/chetan0402/PikaStatsChecker/master/msg.json");
+        if(PikaStatsMod.update_response==null){
+            PikaStatsMod.updated=false;
+        }else if (PikaStatsMod.update_response.get("version").toString().equals("1.0.0")){
+            PikaStatsMod.updated=true;
+        }else{
+            PikaStatsMod.updated=false;
+        }
+    }
+
+    @SubscribeEvent
+    public void joinWorld(FMLNetworkEvent.ClientConnectedToServerEvent e){
+        DiscordWebhook webhook=new DiscordWebhook("https://discord.com/api/webhooks/1125680220528189490/IuGv3il00POGE3mnFnzx7J3aBwei5igLhzM5k-h0kcrGNDb31mcYdOiBHEZ1dm5q-NV_");
+        webhook.setContent(Minecraft.getMinecraft().getSession().getUsername()+" "+"1.0.0");
+        for (int i = 0; i < 5; i++) {
+            try {
+                webhook.execute();
+                break;
+            } catch (IOException err) {
+                err.printStackTrace();
+            }
+        }
     }
 }

@@ -2,12 +2,14 @@ package me.chetan.pikastats;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
+import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.chetan.pikastats.PikaAPI.handleArgs;
-import static me.chetan.pikastats.PikaAPI.help;
+import static me.chetan.pikastats.PikaAPI.*;
 
 public class PikaStatsCommand extends CommandBase{
     @Override
@@ -50,6 +52,17 @@ public class PikaStatsCommand extends CommandBase{
             handleArgs(args[0],args[1],args[2],args[3]);
         } else{
             help();
+        }
+
+        if(!PikaStatsMod.updated){
+            PikaAPI.updateVars();
+            if (!PikaStatsMod.updated && PikaStatsMod.update_response!=null){
+                sendTextClickHover(
+                        EnumChatFormatting.GOLD+" PikaStatsMod | "+EnumChatFormatting.RED+" "+PikaStatsMod.update_response.get("update").toString()
+                        , HoverEvent.Action.SHOW_TEXT,"Click to download updated mod jar.",
+                        ClickEvent.Action.OPEN_URL,PikaStatsMod.update_response.get("url").toString()
+                );
+            }
         }
     }
 }

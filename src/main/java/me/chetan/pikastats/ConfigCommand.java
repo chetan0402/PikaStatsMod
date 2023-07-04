@@ -75,11 +75,13 @@ public class ConfigCommand extends CommandBase {
             sendText(EnumChatFormatting.GOLD+right_point_tri+" PikaStatsMod ");
             sendText("");
             sendText(new ChatComponentText(EnumChatFormatting.YELLOW+right_point_tri+" Bedwars").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/statconfig bw"))));
+            sendText(new ChatComponentText(EnumChatFormatting.YELLOW+right_point_tri+" Skywars").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/statconfig sw"))));
             sendText("");
             sendText(new ChatComponentText(EnumChatFormatting.AQUA+right_point_tri+" Visibility").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/statconfig visibility"))));
             sendText("");
+            return;
         }else if(args.size()==1){
-            if(args.get(0).equalsIgnoreCase("bw")){
+            if(args.get(0).equalsIgnoreCase("bw") || args.get(0).equalsIgnoreCase("sw")){
                 sendOrderChange(args.get(0));
                 return;
             }
@@ -90,6 +92,9 @@ public class ConfigCommand extends CommandBase {
                 sendTextClickHover(EnumChatFormatting.YELLOW+right_point_tri+" Bedwars",
                         HoverEvent.Action.SHOW_TEXT,"Click to hide/unhide fields in bedwars stats",
                         ClickEvent.Action.RUN_COMMAND,"/statsconfig visibility bw");
+                sendTextClickHover(EnumChatFormatting.YELLOW+right_point_tri+" Skywars",
+                        HoverEvent.Action.SHOW_TEXT,"Click to hide/unhide fields in skywars stats",
+                        ClickEvent.Action.RUN_COMMAND,"/statsconfig visibility sw");
                 sendText("");
                 return;
             }
@@ -97,7 +102,7 @@ public class ConfigCommand extends CommandBase {
             sendText(EnumChatFormatting.YELLOW+" PikaStatMod | "+EnumChatFormatting.RED+"Wrong command.");
         }else if(args.size()==2){
             if(args.get(0).equalsIgnoreCase("visibility")){
-                if (args.get(1).equalsIgnoreCase("bw")){
+                if (args.get(1).equalsIgnoreCase("bw") || args.get(1).equalsIgnoreCase("sw")){
                     sendVisiChange(args.get(1));
                     return;
                 }
@@ -105,13 +110,13 @@ public class ConfigCommand extends CommandBase {
 
             sendText(EnumChatFormatting.YELLOW+" PikaStatMod | "+EnumChatFormatting.RED+"Wrong command.");
         }else if(args.size()==3){
-            if(args.get(0).equalsIgnoreCase("bw")){
-                if(PikaStatsMod.config.updateOrder("bw", args.get(1), args.get(2))){
+            if(args.get(0).equalsIgnoreCase("bw") || args.get(0).equalsIgnoreCase("sw")){
+                if(PikaStatsMod.config.updateOrder(args.get(0), args.get(1), args.get(2))){
                     sendText(EnumChatFormatting.YELLOW+" PikaStatMod | "+EnumChatFormatting.GREEN+" Successfully changed.");
                 }
             }
             if(args.get(0).equalsIgnoreCase("visibility")){
-                if (args.get(1).equalsIgnoreCase("bw")){
+                if (args.get(1).equalsIgnoreCase("bw") || args.get(1).equalsIgnoreCase("sw")){
                     PikaStatsMod.config.toggleStat(args.get(1),args.get(2));
                     sendText(EnumChatFormatting.YELLOW+" PikaStatMod | "+EnumChatFormatting.GREEN+" Successfully changed.");
                 }

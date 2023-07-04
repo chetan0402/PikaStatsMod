@@ -19,6 +19,7 @@ public class Config {
     private final File orderList;
     private JsonObject each_order=new JsonObject();
     public ArrayList<String> bw_options=new ArrayList<>();
+    public ArrayList<String> sw_options=new ArrayList<>();
     public Config(){
         this.dataDir= new File(Minecraft.getMinecraft().mcDataDir.getAbsolutePath()+"/config");
         this.orderList=new File(dataDir.getAbsolutePath()+"/PikaStatOrderList.DoNotDelete");
@@ -34,7 +35,7 @@ public class Config {
         }else{
             String version=null;
             try {
-                version=getVersion();
+                version= getVersion();
             } catch (IOException e) {
                 PikaStatsMod.logger.error("Error reading file for version.",e);
                 e.printStackTrace();
@@ -62,7 +63,17 @@ public class Config {
         bw_order.add("Losses");
         bw_order.add("Games played");
         bw_order.add("Deaths");
+
+        LinkedList<String> sw_order=new LinkedList<>();
+        sw_order.add("Kills");
+        sw_order.add("Wins");
+        sw_order.add("Games played");
+        sw_order.add("Highest winstreak reached");
+        sw_order.add("Losses");
+        sw_order.add("Deaths");
+
         each_order.addProperty("bw", String.valueOf(bw_order));
+        each_order.addProperty("sw",String.valueOf(sw_order));
         each_order.addProperty("version","1.0.0");
         writeToFile();
     }
@@ -151,8 +162,7 @@ public class Config {
         String main_string=new String(Files.readAllBytes(this.orderList.toPath()));
         JsonParser parser=new JsonParser();
         this.each_order= parser.parse(main_string).getAsJsonObject();
-        String version= String.valueOf(each_order.get("version"));
-        return version;
+        return each_order.get("version").toString();
     }
 
     public void initVar(){
@@ -170,5 +180,16 @@ public class Config {
         this.bw_options.add("Melee kills");
         this.bw_options.add("Void kills");
 
+        this.sw_options.add("Kills");
+        this.sw_options.add("Wins");
+        this.sw_options.add("Games played");
+        this.sw_options.add("Highest winstreak reached");
+        this.sw_options.add("Losses");
+        this.sw_options.add("Deaths");
+        this.sw_options.add("Bow kills");
+        this.sw_options.add("Arrows hit");
+        this.sw_options.add("Melee kills");
+        this.sw_options.add("Void kills");
+        this.sw_options.add("Arrows shot");
     }
 }
