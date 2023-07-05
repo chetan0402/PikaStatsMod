@@ -13,12 +13,21 @@ import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 
 public class PikaAPI {
@@ -28,7 +37,7 @@ public class PikaAPI {
         JsonObject to_return=null;
         int i=0;
         while(control){
-            to_return=getJson("https://stats.pika-network.net/api/profile/"+player_name+"/leaderboard?type="+type+"&interval="+interval+"&mode="+mode);
+            to_return=getJson("https://stats.pika-network.net/api/profile/"+player_name+"/leaderboard?type="+type+"&interval="+interval+"&mode="+mode, "pika");
             if(to_return!=null){
                 control=false;
             }
@@ -118,28 +127,49 @@ public class PikaAPI {
         Minecraft.getMinecraft().thePlayer.addChatComponentMessage(e);
     }
 
-    public static JsonObject getJson(String url_string){
-        try {
-            URL url = new URL(url_string);
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    public static JsonObject getJson(String url_string, String site){
+        try{
+            URL url=new URL(url_string);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            connection.addRequestProperty("Cache-Control","no-cache, no-store, must-revalidate");
+            connection.addRequestProperty("Pragma","no-cache");
+            connection.addRequestProperty("Expires","0");
+            connection.addRequestProperty("User-Agent","Java");
+            if(site.equals("pika")){
+                Certificate certificate= CertificateFactory.getInstance("X.509").generateCertificate(PikaStatsMod.class.getClassLoader().getResourceAsStream("R3.crt"));
+                KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                keyStore.load(null, null);
+                keyStore.setCertificateEntry("R3",certificate);
+                TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                trustManagerFactory.init(keyStore);
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, trustManagerFactory.getTrustManagers(), null);
+                connection.setSSLSocketFactory(sslContext.getSocketFactory());
+            }
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder responseBuilder = new StringBuilder();
             String line;
+            StringBuilder response = new StringBuilder();
             while ((line = reader.readLine()) != null) {
-                responseBuilder.append(line);
+                response.append(line);
             }
             reader.close();
             connection.disconnect();
-            String jsonResponse = responseBuilder.toString();
-            JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(jsonResponse);
+            JsonParser parser=new JsonParser();
+            JsonElement jsonElement=parser.parse(response.toString());
             return jsonElement.getAsJsonObject();
-        } catch(MalformedURLException ignored){
-            error("Notify the chetan0402 on discord about this error.");
-        } catch (IOException ignored) {
+        } catch (MalformedURLException e) {
+            error("Notify this error with logs to chetan0402 on pika forums");
+            e.printStackTrace();
+        } catch (IOException e) {
             error("Network error.");
+            e.printStackTrace();
+        } catch (IllegalStateException err){
+            error("Weird response from website.");
+            err.printStackTrace();
+        } catch (CertificateException | KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
+            error("Certificate creation failed.");
+            e.printStackTrace();
         }
         return null;
     }
@@ -247,10 +277,10 @@ public class PikaAPI {
     }
 
     public static void updateVars(){
-        PikaStatsMod.update_response=PikaAPI.getJson("https://raw.githubusercontent.com/chetan0402/PikaStatsChecker/master/msg.json");
+        PikaStatsMod.update_response=PikaAPI.getJson("https://raw.githubusercontent.com/chetan0402/PikaStatsChecker/master/msg.json", "github");
         if(PikaStatsMod.update_response==null){
             PikaStatsMod.updated=false;
-        }else if (PikaStatsMod.update_response.get("version").toString().equals("1.0.0")){
+        }else if (PikaStatsMod.update_response.get("version").toString().replace("\"","").equals("1.0.0")){
             PikaStatsMod.updated=true;
         }else{
             PikaStatsMod.updated=false;
