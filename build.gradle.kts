@@ -1,9 +1,12 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     idea
     java
     id("gg.essential.loom") version "0.10.0.+"
     id("dev.architectury.architectury-pack200") version "0.1.3"
     id("com.github.johnrengelman.shadow") version "7.1.2"
+    kotlin("jvm") version "1.8.20"
 }
 
 //Constants:
@@ -51,8 +54,7 @@ sourceSets.main {
 repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
-    // If you don't want to log in with your real minecraft account, remove this line
-    maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
+    maven("https://repo.essential.gg/repository/maven-public/")
 }
 
 val shadowImpl: Configuration by configurations.creating {
@@ -63,6 +65,7 @@ dependencies {
     minecraft("com.mojang:minecraft:1.8.9")
     mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
     forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
+    shadowImpl("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     // If you don't want mixins, remove these lines
     //shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
@@ -70,12 +73,14 @@ dependencies {
     //}
     //annotationProcessor("org.spongepowered:mixin:0.8.4-SNAPSHOT")
 
-    // If you don't want to log in with your real minecraft account, remove this line
-    runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
-
 }
 
 // Tasks:
+tasks.withType<KotlinCompile>{
+    kotlinOptions{
+        jvmTarget = "1.8"
+    }
+}
 
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
