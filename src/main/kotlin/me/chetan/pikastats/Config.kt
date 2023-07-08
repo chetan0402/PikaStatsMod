@@ -12,10 +12,11 @@ import java.util.*
 class Config {
     private var dataDir: File = File(Minecraft.getMinecraft().mcDataDir.absolutePath + "/config")
     private var orderList: File = File(dataDir.absolutePath + "/PikaStatOrderList.DoNotDelete")
-    private var eachOrder = JsonObject()
+    var eachOrder = JsonObject()
     val bwOptions = listOf("Final kills","Kills","Highest winstreak reached","Beds destroyed","Wins","Losses","Games played","Deaths","Bow kills","Arrows shot","Arrows hit","Melee kills","Void kills")
     val swOptions = listOf("Kills","Wins","Games played","Highest winstreak reached","Losses","Deaths","Bow kills","Arrows shot","Arrows hit","Melee kills","Void kills")
     val upracOptions= listOf("Highest winstreak reached","Hits dealt","Losses","Bow kills","Kills","Void kills","Games played","Wins","Hits taken")
+    val rpracOptions= listOf("Highest winstreak reached","Hits dealt","Losses","Bow kills","Kills","Void kills","Games played","Wins","Hits taken","Elo")
     init {
         if (!orderList.exists()) {
             try {
@@ -36,6 +37,8 @@ class Config {
                 typeInit = "fresh"
             } else if (version == "1.0.0") {
                 typeInit = "1.0.0"
+            } else if (version == "1.0.1"){
+                typeInit = "1.0.1"
             }
             try {
                 init(typeInit)
@@ -55,21 +58,33 @@ class Config {
                     val bwOrder = listOf("Final kills","Kills","Highest winstreak reached","Beds destroyed","Wins","Losses","Games played","Deaths")
                     val swOrder = listOf("Kills","Wins","Games played","Highest winstreak reached","Losses","Deaths")
                     val upracOrder = listOf("Wins","Losses","Games played","Kills","Highest winstreak reached")
+                    val rpracOrder = listOf("Elo","Wins","Losses","Games played","Kills","Highest winstreak reached")
                     eachOrder.remove("bw")
                     eachOrder.remove("sw")
                     eachOrder.remove("uprac")
+                    eachOrder.remove("rprac")
                     eachOrder.addProperty("bw", bwOrder.toString())
                     eachOrder.addProperty("sw", swOrder.toString())
                     eachOrder.addProperty("uprac",upracOrder.toString())
+                    eachOrder.addProperty("rprac",rpracOrder.toString())
+                    eachOrder.addProperty("fkdr",true)
+                    eachOrder.addProperty("wlr",true)
                 }
                 "1.0.0" -> {
                     val upracOrder = listOf("Wins","Losses","Games played","Kills","Highest winstreak reached")
+                    val rpracOrder = listOf("Elo","Wins","Losses","Games played","Kills","Highest winstreak reached")
                     eachOrder.remove("uprac")
+                    eachOrder.remove("rprac")
                     eachOrder.addProperty("uprac",upracOrder.toString())
+                    eachOrder.addProperty("rprac",rpracOrder.toString())
+                }
+                "1.0.1" -> {
+                    eachOrder.addProperty("fkdr",true)
+                    eachOrder.addProperty("wlr",true)
                 }
             }
             eachOrder.remove("version")
-            eachOrder.addProperty("version", "1.0.1")
+            eachOrder.addProperty("version", "1.0.2")
             writeToFile()
         } catch (e:Exception){
             PikaAPI.error("Error in creating/migrating config file.")
@@ -152,6 +167,15 @@ class Config {
         }
         eachOrder.remove(gamemode)
         eachOrder.addProperty(gamemode, list.toString())
+        writeToFile()
+    }
+
+    fun toggleExtra(stat:String){
+        when(eachOrder.remove(stat).toString().toBooleanStrictOrNull()){
+            true -> eachOrder.addProperty(stat,false)
+            false -> eachOrder.addProperty(stat,true)
+            else -> eachOrder.addProperty(stat,true)
+        }
         writeToFile()
     }
 

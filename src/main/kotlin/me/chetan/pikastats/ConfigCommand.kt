@@ -72,6 +72,11 @@ class ConfigCommand: CommandBase() {
                 HoverEvent.Action.SHOW_TEXT, "Click to re-order unranked practice stats",
                 ClickEvent.Action.RUN_COMMAND, "/statconfig uprac"
             )
+            PikaAPI.sendTextClickHover(
+                EnumChatFormatting.YELLOW.toString() + PikaAPI.right_point_tri + " Ranked Practice",
+                HoverEvent.Action.SHOW_TEXT, "Click to re-order ranked practice stats",
+                ClickEvent.Action.RUN_COMMAND, "/statconfig rprac"
+            )
             PikaAPI.sendText("")
             PikaAPI.sendTextClickHover(
                 EnumChatFormatting.AQUA.toString() + PikaAPI.right_point_tri + " Visibility",
@@ -82,7 +87,7 @@ class ConfigCommand: CommandBase() {
             return
         }
         when(args[0]){
-            "bw","sw","uprac" -> when(args.size){
+            "bw","sw","uprac","rprac" -> when(args.size){
                 1 -> PikaAPI.sendOrderChange(args[0])
                 3 -> {
                     if(PikaStatsMod.config.updateOrder(args[0],args[1],args[2])){
@@ -111,15 +116,32 @@ class ConfigCommand: CommandBase() {
                             HoverEvent.Action.SHOW_TEXT, "Click to hide/unhide fields in unranked practice stats",
                             ClickEvent.Action.RUN_COMMAND, "/statsconfig visibility uprac"
                         )
+                        PikaAPI.sendTextClickHover(
+                            EnumChatFormatting.YELLOW.toString() + PikaAPI.right_point_tri + " Ranked Practice",
+                            HoverEvent.Action.SHOW_TEXT, "Click to hide/unhide fields in ranked practice stats",
+                            ClickEvent.Action.RUN_COMMAND, "/statsconfig visibility rprac"
+                        )
+                        PikaAPI.sendText("")
+                        PikaAPI.sendTextClickHover(
+                            EnumChatFormatting.AQUA.toString() + PikaAPI.right_point_tri + " FKDR",
+                            HoverEvent.Action.SHOW_TEXT, "Click to hide/unhide",
+                            ClickEvent.Action.RUN_COMMAND, "/statsconfig visibility fkdr"
+                        )
+                        PikaAPI.sendTextClickHover(
+                            EnumChatFormatting.AQUA.toString() + PikaAPI.right_point_tri + " wlr",
+                            HoverEvent.Action.SHOW_TEXT, "Click to hide/unhide ",
+                            ClickEvent.Action.RUN_COMMAND, "/statsconfig visibility wlr"
+                        )
                         PikaAPI.sendText("")
                     }
                     2 -> {
-                        if(listOf("bw","sw","uprac").contains(args[1])){
-                            PikaAPI.sendVisiChange(args[1])
+                        when(args[1].lowercase()){
+                            "bw","sw","uprac","rprac" -> PikaAPI.sendVisiChange(args[1].lowercase())
+                            "fkdr","wlr" -> PikaStatsMod.config.toggleExtra(args[1].lowercase())
                         }
                     }
                     3 -> {
-                        if(listOf("bw","sw","uprac").contains(args[1])){
+                        if(listOf("bw","sw","uprac","rprac").contains(args[1])){
                             PikaStatsMod.config.toggleStat(args[1], args[2])
                             PikaAPI.sendText(EnumChatFormatting.YELLOW.toString() + " PikaStatMod | " + EnumChatFormatting.GREEN + " Successfully changed.")
                             PikaAPI.sendVisiChange(args[1])

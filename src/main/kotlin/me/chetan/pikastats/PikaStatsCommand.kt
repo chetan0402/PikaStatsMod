@@ -44,8 +44,9 @@ class PikaStatsCommand: CommandBase() {
                 when(args[1].lowercase()){
                     "bw","bws","bedwar","bedwars" -> {gamemode="bedwars";otherGamemode="bw"}
                     "sw","sws","skywar","skywars" -> {gamemode="skywars";otherGamemode="sw"}
-                    "uprac","unprac","unrankprac","unrankedprac" -> {gamemode="unrankedpractice";otherGamemode="uprac"}
-                    else -> PikaAPI.sendText(""+EnumChatFormatting.GOLD+" PikaStatsMod | "+EnumChatFormatting.RED+"No such gamemode: "+args[1])
+                    "uprac","unprac","unrankprac","unrankedprac","upractice","unpractice","unrankpractice","unrankedpractice" -> {gamemode="unrankedpractice";otherGamemode="uprac"}
+                    "rprac","rankprac","rankedprac","rankedpractice","rpractice","rankpractice" -> {gamemode="rankedpractice";otherGamemode="rprac"}
+                    else -> {PikaAPI.sendText(""+EnumChatFormatting.GOLD+" PikaStatsMod | "+EnumChatFormatting.RED+"No such gamemode: "+args[1]);return}
                 }
 
                 var time="total"
@@ -92,8 +93,8 @@ class PikaStatsCommand: CommandBase() {
                 PikaAPI.updateVars()
                 if (!PikaStatsMod.updated && PikaStatsMod.update_response != null) {
                     PikaAPI.sendTextClickHover(
-                            EnumChatFormatting.GOLD.toString() + " PikaStatsMod | " + EnumChatFormatting.RED + " " + PikaStatsMod.update_response["update"].toString(), HoverEvent.Action.SHOW_TEXT, "Click to download updated mod jar.",
-                            ClickEvent.Action.OPEN_URL, PikaStatsMod.update_response["url"].toString()
+                            EnumChatFormatting.GOLD.toString() + " PikaStatsMod | " + EnumChatFormatting.RED + " " + PikaStatsMod.update_response["update"].asString, HoverEvent.Action.SHOW_TEXT, "Click to download updated mod jar.",
+                            ClickEvent.Action.OPEN_URL, PikaStatsMod.update_response["url"].asString
                     )
                 }
             }
