@@ -28,6 +28,7 @@ import javax.net.ssl.TrustManagerFactory
 object PikaAPI {
     val right_point_tri = "\u25B6 "
     fun minigames(playerName: String, interval: String, mode: String, type: String): JsonObject? {
+        if (playerName=="" || interval=="" || mode=="" || type=="") return null
         var control = true
         var toReturn: JsonObject? = null
         var i = 0
@@ -177,31 +178,11 @@ object PikaAPI {
         sendText("")
         val allowedFkdr=PikaStatsMod.config.eachOrder["fkdr"].toString().toBoolean()
         if(allowedFkdr) {
-            var finalKill = getField(main, "Final kills")
-            if(finalKill==null){
-                finalKill= getField(main,"Kills")
-            }
-            val finalDeath = getField(main, "Losses")
-            if (finalKill != null && finalDeath != null) {
-                if(finalKill["value"].asString.toInt()!=0 && finalDeath["value"].asString.toInt()!=0){
-                    val fkdr = finalKill["value"].asString.toFloat() / finalDeath["value"].asString.toFloat()
-                    sendStatInfo("FKDR", BigDecimal(fkdr.toDouble()).setScale(2, RoundingMode.HALF_EVEN).toString(),"0")
-                }
-            }
+            sendStatInfo("FKDR", getFkdr(main).toString(),"0")
         }
         val allowedWlr=PikaStatsMod.config.eachOrder["wlr"].toString().toBoolean()
         if(allowedWlr){
-            val wins= getField(main,"Wins")
-            var played= getField(main,"Games played")
-            if(played==null){
-                played= getField(main,"Losses")
-            }
-            if(wins!=null && played!=null){
-                if(wins["value"].asString.toInt()!=0 && played["value"].asString.toInt()!=0){
-                    val wlr=wins["value"].asString.toFloat() / played["value"].asString.toFloat()
-                    sendStatInfo("WLR", BigDecimal(wlr.toDouble()).setScale(2, RoundingMode.HALF_EVEN).toString(),"0")
-                }
-            }
+            sendStatInfo("WLR", getWLR(main).toString(),"0")
         }
         sendText("")
         for (field in PikaStatsMod.config.getGameConfig(gamemode)) {
@@ -268,10 +249,72 @@ object PikaAPI {
             getJson("https://raw.githubusercontent.com/chetan0402/PikaStatsChecker/master/msg.json", "github")
         if (PikaStatsMod.update_response == null) {
             PikaStatsMod.updated = false
-        } else if (PikaStatsMod.update_response["version"].toString().replace("\"", "") == "1.0.2") {
+        } else if (PikaStatsMod.update_response["version"].toString().replace("\"", "") == "1.0.3") {
             PikaStatsMod.updated = true
         } else {
             PikaStatsMod.updated = false
         }
+    }
+
+    fun getUsername(formatted: String): String{
+        val list= removeFormatting(formatted).split(" ")
+        val ranks= listOf("vip","elite","titan","champion","owner","manager","developer","admin","sr.mod","moderator","helper","trial","youtube","twitch","tiktok","[NPC]")
+        return if (ranks.contains(list[0].lowercase())){
+            list[1]
+        }else if (list[0].length<3){
+            if(list.size>1) {
+                list[1]
+            }else{
+                list[0]
+            }
+        }else if (list[0].first()=='[' && list[0].last()==']'){
+            list[1]
+        }else{
+            list[0]
+        }
+    }
+
+    fun removeFormatting(formatted: String?):String{
+        if (formatted==null) return ""
+        var toReturn=formatted.toString()
+        val formatting= listOf("§0","§1","§2","§3","§4","§5","§6","§7","§8","§9","§a","§b","§c","§d","§e","§f","§k","§l","§m","§n","§o","§r")
+        for(item in formatting){
+            toReturn=toReturn.replace(item,"")
+        }
+        return toReturn
+    }
+
+    fun getFkdr(main: JsonObject?):Float{
+        if (main==null){
+            return 0f
+        }
+        var finalKill = getField(main, "Final kills")
+        if(finalKill==null){
+            finalKill= getField(main,"Kills")
+        }
+        val finalDeath = getField(main, "Losses")
+        if (finalKill != null && finalDeath != null) {
+            if(finalKill["value"].asString.toInt()!=0 && finalDeath["value"].asString.toInt()!=0){
+                val fkdr = finalKill["value"].asString.toFloat() / finalDeath["value"].asString.toFloat()
+                return BigDecimal(fkdr.toDouble()).setScale(2, RoundingMode.HALF_EVEN).toFloat()
+            }
+        }
+        return 0f
+    }
+
+    fun getWLR(main: JsonObject?):Float{
+        if (main==null) return 0f
+        val wins= getField(main,"Wins")
+        var played= getField(main,"Games played")
+        if(played==null){
+            played= getField(main,"Losses")
+        }
+        if(wins!=null && played!=null){
+            if(wins["value"].asString.toInt()!=0 && played["value"].asString.toInt()!=0){
+                val wlr=wins["value"].asString.toFloat() / played["value"].asString.toFloat()
+                return BigDecimal(wlr.toDouble()).setScale(2, RoundingMode.HALF_EVEN).toFloat()
+            }
+        }
+        return 0f
     }
 }

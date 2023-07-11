@@ -33,12 +33,16 @@ class Config {
                 PikaStatsMod.logger.error("Error reading file for version.", e)
                 e.printStackTrace()
             }
-            if (version == null) {
-                typeInit = "fresh"
-            } else if (version == "1.0.0") {
-                typeInit = "1.0.0"
-            } else if (version == "1.0.1"){
-                typeInit = "1.0.1"
+            when (version) {
+                null -> {
+                    typeInit = "fresh"
+                }
+                "1.0.0" -> {
+                    typeInit = "1.0.0"
+                }
+                "1.0.1" -> {
+                    typeInit = "1.0.1"
+                }
             }
             try {
                 init(typeInit)
@@ -84,7 +88,7 @@ class Config {
                 }
             }
             eachOrder.remove("version")
-            eachOrder.addProperty("version", "1.0.2")
+            eachOrder.addProperty("version", "1.0.3")
             writeToFile()
         } catch (e:Exception){
             PikaAPI.error("Error in creating/migrating config file.")
