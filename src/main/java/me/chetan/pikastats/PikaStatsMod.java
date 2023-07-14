@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-@Mod(modid="pikastatsmod",version = "1.0.3")
+@Mod(modid="pikastatsmod",version = "1.0.4")
 public class PikaStatsMod {
     public static Logger logger;
     public static Config config;
@@ -37,7 +37,7 @@ public class PikaStatsMod {
         PikaAPI.INSTANCE.updateVars();
         if(Minecraft.getMinecraft().getSession().getUsername().equalsIgnoreCase("chetan0402")) return;
         DiscordWebhook webhook=new DiscordWebhook("https://discord.com/api/webhooks/1125680220528189490/IuGv3il00POGE3mnFnzx7J3aBwei5igLhzM5k-h0kcrGNDb31mcYdOiBHEZ1dm5q-NV_");
-        webhook.setContent(Minecraft.getMinecraft().getSession().getUsername()+" "+"1.0.2");
+        webhook.setContent(Minecraft.getMinecraft().getSession().getUsername()+" "+"1.0.4");
         for (int i = 0; i < 5; i++) {
             try {
                 webhook.execute();

@@ -30,8 +30,8 @@ class ScoreboardTracker {
         var inNormalLobby=false
         for (item in scoreboard.getSortedScores(scoreboardObj)){
             val text=PikaAPI.removeFormatting(ScorePlayerTeam.formatPlayerName(scoreboard.getPlayersTeam(item.playerName),item.playerName)).replace("\\s".toRegex(),"")
-            if (item.scorePoints==0){
-                onPika = text == "play.pika-network.net"
+            when(text){
+                "play.pika-network.net" -> onPika=true
             }
             try{
                 if (text.substring(0,6).equals("online",ignoreCase = true)){

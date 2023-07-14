@@ -249,7 +249,7 @@ object PikaAPI {
             getJson("https://raw.githubusercontent.com/chetan0402/PikaStatsChecker/master/msg.json", "github")
         if (PikaStatsMod.update_response == null) {
             PikaStatsMod.updated = false
-        } else if (PikaStatsMod.update_response["version"].toString().replace("\"", "") == "1.0.3") {
+        } else if (PikaStatsMod.update_response["version"].toString().replace("\"", "") == "1.0.4") {
             PikaStatsMod.updated = true
         } else {
             PikaStatsMod.updated = false
@@ -258,7 +258,7 @@ object PikaAPI {
 
     fun getUsername(formatted: String): String{
         val list= removeFormatting(formatted).split(" ")
-        val ranks= listOf("vip","elite","titan","champion","owner","manager","developer","admin","sr.mod","moderator","helper","trial","youtube","twitch","tiktok","[NPC]")
+        val ranks= listOf("vip","elite","titan","champion","owner","manager","developer","admin","sr.mod","moderator","helper","trial","youtube","twitch","tiktok","[NPC]","w","y","b","a","g","p","r","spectator")
         return if (ranks.contains(list[0].lowercase())){
             list[1]
         }else if (list[0].length<3){

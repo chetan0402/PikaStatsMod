@@ -88,7 +88,7 @@ class Config {
                 }
             }
             eachOrder.remove("version")
-            eachOrder.addProperty("version", "1.0.3")
+            eachOrder.addProperty("version", "1.0.4")
             writeToFile()
         } catch (e:Exception){
             PikaAPI.error("Error in creating/migrating config file.")
