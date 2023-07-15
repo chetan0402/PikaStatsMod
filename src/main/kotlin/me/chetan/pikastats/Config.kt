@@ -17,6 +17,7 @@ class Config {
     val swOptions = listOf("Kills","Wins","Games played","Highest winstreak reached","Losses","Deaths","Bow kills","Arrows shot","Arrows hit","Melee kills","Void kills")
     val upracOptions= listOf("Highest winstreak reached","Hits dealt","Losses","Bow kills","Kills","Void kills","Games played","Wins","Hits taken")
     val rpracOptions= listOf("Highest winstreak reached","Hits dealt","Losses","Bow kills","Kills","Void kills","Games played","Wins","Hits taken","Elo")
+    val tabOptions= listOf("FKDR","WLR","Final kills","Kills","Highest winstreak reached","Wins","Losses")
     init {
         if (!orderList.exists()) {
             try {
@@ -26,23 +27,15 @@ class Config {
             }
         } else {
             var version: String? = null
-            var typeInit = "fresh"
             try {
                 version = getVersion()
             } catch (e: IOException) {
                 PikaStatsMod.logger.error("Error reading file for version.", e)
                 e.printStackTrace()
             }
-            when (version) {
-                null -> {
-                    typeInit = "fresh"
-                }
-                "1.0.0" -> {
-                    typeInit = "1.0.0"
-                }
-                "1.0.1" -> {
-                    typeInit = "1.0.1"
-                }
+            val typeInit = when (version) {
+                null -> "fresh"
+                else -> version
             }
             try {
                 init(typeInit)
@@ -55,7 +48,7 @@ class Config {
 
     private fun init(type: String) {
         try{
-            when(type){
+            when(type.replace("\"","")){
                 "fresh" -> {
                     orderList.delete()
                     orderList.createNewFile()
@@ -73,6 +66,7 @@ class Config {
                     eachOrder.addProperty("rprac",rpracOrder.toString())
                     eachOrder.addProperty("fkdr",true)
                     eachOrder.addProperty("wlr",true)
+                    eachOrder.addProperty("tab","FKDR")
                 }
                 "1.0.0" -> {
                     val upracOrder = listOf("Wins","Losses","Games played","Kills","Highest winstreak reached")
@@ -81,14 +75,22 @@ class Config {
                     eachOrder.remove("rprac")
                     eachOrder.addProperty("uprac",upracOrder.toString())
                     eachOrder.addProperty("rprac",rpracOrder.toString())
+                    eachOrder.addProperty("fkdr",true)
+                    eachOrder.addProperty("wlr",true)
+                    eachOrder.addProperty("tab","FKDR")
                 }
                 "1.0.1" -> {
                     eachOrder.addProperty("fkdr",true)
                     eachOrder.addProperty("wlr",true)
+                    eachOrder.addProperty("tab","FKDR")
+                }
+                "1.0.2","1.0.3","1.0.4" -> {
+                    eachOrder.addProperty("tab","FKDR")
                 }
             }
             eachOrder.remove("version")
-            eachOrder.addProperty("version", "1.0.4")
+            //VersionChange
+            eachOrder.addProperty("version", "1.0.5")
             writeToFile()
         } catch (e:Exception){
             PikaAPI.error("Error in creating/migrating config file.")
@@ -118,7 +120,7 @@ class Config {
             PikaAPI.error("Corrupted or old config.")
             init("fresh")
         } catch (e: Exception){
-            PikaAPI.error("Unknown error occured. Contact chetan0402 on github/pika-forums")
+            PikaAPI.error("Unknown error occured. Contact chetan0402 on discord/github/pika-forums")
             e.printStackTrace()
         }
         return LinkedList()
@@ -180,6 +182,13 @@ class Config {
             false -> eachOrder.addProperty(stat,true)
             else -> eachOrder.addProperty(stat,true)
         }
+        writeToFile()
+    }
+
+    fun setTab(stat:String){
+        eachOrder.remove("tab")
+        eachOrder.addProperty("tab",stat)
+        PikaStatsMod.userCache.reset()
         writeToFile()
     }
 

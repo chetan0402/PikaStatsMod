@@ -27,6 +27,8 @@ import javax.net.ssl.TrustManagerFactory
 
 object PikaAPI {
     val right_point_tri = "\u25B6 "
+    var numberOfFail=0
+    var tempDisable=false
     fun minigames(playerName: String, interval: String, mode: String, type: String): JsonObject? {
         if (playerName=="" || interval=="" || mode=="" || type=="") return null
         var control = true
@@ -80,30 +82,39 @@ object PikaAPI {
             connection.disconnect()
             val parser = JsonParser()
             val jsonElement = parser.parse(response.toString())
+            numberOfFail=0
             return jsonElement.asJsonObject
         } catch (e: MalformedURLException) {
             error("Notify this error with logs to chetan0402 on pika forums")
+            networkFail()
             e.printStackTrace()
         } catch (e: IOException) {
             error("Network error.")
+            networkFail()
             e.printStackTrace()
         } catch (err: IllegalStateException) {
             error("Weird response from website.")
+            networkFail()
             err.printStackTrace()
         } catch (e: CertificateException) {
             error("Certificate creation failed.")
+            networkFail()
             e.printStackTrace()
         } catch (e: KeyStoreException) {
             error("Certificate creation failed.")
+            networkFail()
             e.printStackTrace()
         } catch (e: NoSuchAlgorithmException) {
             error("Certificate creation failed.")
+            networkFail()
             e.printStackTrace()
         } catch (e: KeyManagementException) {
             error("Certificate creation failed.")
+            networkFail()
             e.printStackTrace()
         } catch (e:Exception){
             error("Unknown error.. Contact chetan0402 on discord/pika-forums related with logs")
+            networkFail()
             e.printStackTrace()
         }
         return null
@@ -113,6 +124,15 @@ object PikaAPI {
         PikaStatsMod.logger.error(toTell)
         if (Minecraft.getMinecraft().theWorld != null) {
             sendText(EnumChatFormatting.YELLOW.toString() + "PikaStatsMod | " + EnumChatFormatting.RED + toTell)
+        }
+    }
+
+    fun networkFail(){
+        if (tempDisable) return
+        numberOfFail += 1
+        if (numberOfFail==20){
+            tempDisable=true
+            error("Due to 20 failed requests the tab stats has been disabled")
         }
     }
 
@@ -132,7 +152,7 @@ object PikaAPI {
         sendText("")
     }
 
-    private fun getField(requested: JsonObject?, field: String): JsonObject? {
+    fun getField(requested: JsonObject?, field: String): JsonObject? {
         try {
             if (requested != null) {
                 var fieldVar = requested[field].asJsonObject["entries"].toString()
@@ -244,12 +264,13 @@ object PikaAPI {
         sendText("")
     }
 
+    //VersionChange
     fun updateVars() {
         PikaStatsMod.update_response =
             getJson("https://raw.githubusercontent.com/chetan0402/PikaStatsChecker/master/msg.json", "github")
         if (PikaStatsMod.update_response == null) {
             PikaStatsMod.updated = false
-        } else if (PikaStatsMod.update_response["version"].toString().replace("\"", "") == "1.0.4") {
+        } else if (PikaStatsMod.update_response["version"].toString().replace("\"", "") == "1.0.5") {
             PikaStatsMod.updated = true
         } else {
             PikaStatsMod.updated = false

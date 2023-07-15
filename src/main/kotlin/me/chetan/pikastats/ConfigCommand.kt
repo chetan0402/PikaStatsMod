@@ -84,6 +84,12 @@ class ConfigCommand: CommandBase() {
                 ClickEvent.Action.RUN_COMMAND, "/statconfig visibility"
             )
             PikaAPI.sendText("")
+            PikaAPI.sendTextClickHover(
+                EnumChatFormatting.GOLD.toString() + PikaAPI.right_point_tri + " Tab Stats",
+                HoverEvent.Action.SHOW_TEXT, "Click to change tab stats",
+                ClickEvent.Action.RUN_COMMAND, "/statconfig tab"
+            )
+            PikaAPI.sendText("")
             return
         }
         when(args[0]){
@@ -148,6 +154,31 @@ class ConfigCommand: CommandBase() {
                         }
                     }
                     else -> PikaAPI.error("Wrong command.")
+                }
+            }
+            "tab"->{
+                when(args.size){
+                    1 -> {
+                        PikaAPI.sendText("")
+                        for (stat in PikaStatsMod.config.tabOptions){
+                            PikaAPI.sendTextClickHover(
+                                EnumChatFormatting.YELLOW.toString() + PikaAPI.right_point_tri + " $stat",
+                                HoverEvent.Action.SHOW_TEXT, "Click to set tab stats as $stat",
+                                ClickEvent.Action.RUN_COMMAND, "/statconfig tab \"$stat\""
+                            )
+                        }
+                        PikaAPI.sendText("")
+                        PikaAPI.sendTextClickHover(
+                            EnumChatFormatting.DARK_RED.toString() + PikaAPI.right_point_tri + " Disable",
+                            HoverEvent.Action.SHOW_TEXT, "Disable tab stats",
+                            ClickEvent.Action.RUN_COMMAND, "/statconfig tab disable"
+                        )
+                        PikaAPI.sendText("")
+                    }
+                    2 -> {
+                        PikaStatsMod.config.setTab(args[1])
+                        PikaAPI.sendText(EnumChatFormatting.YELLOW.toString() + " PikaStatMod | " + EnumChatFormatting.GREEN + " Successfully changed.")
+                    }
                 }
             }
             else -> PikaAPI.error("Wrong command.")
