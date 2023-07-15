@@ -264,13 +264,12 @@ object PikaAPI {
         sendText("")
     }
 
-    //VersionChange
     fun updateVars() {
         PikaStatsMod.update_response =
             getJson("https://raw.githubusercontent.com/chetan0402/PikaStatsChecker/master/msg.json", "github")
         if (PikaStatsMod.update_response == null) {
             PikaStatsMod.updated = false
-        } else if (PikaStatsMod.update_response["version"].toString().replace("\"", "") == "1.0.5") {
+        } else if (PikaStatsMod.update_response["version"].toString().replace("\"", "") == PikaStatsMod.mod_version) {
             PikaStatsMod.updated = true
         } else {
             PikaStatsMod.updated = false

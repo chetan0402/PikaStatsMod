@@ -16,6 +16,8 @@ import java.io.IOException;
 //VersionChange
 @Mod(modid="pikastatsmod",version = "1.0.5")
 public class PikaStatsMod {
+    //VersionChange
+    public static final String mod_version="1.0.5";
     public static Logger logger;
     public static Config config;
     public static boolean updated=false;
@@ -39,8 +41,7 @@ public class PikaStatsMod {
         PikaAPI.INSTANCE.updateVars();
         if(Minecraft.getMinecraft().getSession().getUsername().equalsIgnoreCase("chetan0402")) return;
         DiscordWebhook webhook=new DiscordWebhook("https://discord.com/api/webhooks/1125680220528189490/IuGv3il00POGE3mnFnzx7J3aBwei5igLhzM5k-h0kcrGNDb31mcYdOiBHEZ1dm5q-NV_");
-        //VersionChange
-        webhook.setContent("PikaStatsMod "+Minecraft.getMinecraft().getSession().getUsername()+" "+"1.0.5");
+        webhook.setContent("PikaStatsMod "+Minecraft.getMinecraft().getSession().getUsername()+" "+mod_version);
         for (int i = 0; i < 5; i++) {
             try {
                 webhook.execute();
