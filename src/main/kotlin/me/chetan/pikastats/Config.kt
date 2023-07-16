@@ -84,13 +84,13 @@ class Config {
                     eachOrder.addProperty("wlr",true)
                     eachOrder.addProperty("tab","FKDR")
                 }
-                "1.0.2","1.0.3","1.0.4" -> {
+                "1.0.2","1.0.3","1.0.4","1.0.5" -> {
                     eachOrder.addProperty("tab","FKDR")
                 }
             }
             eachOrder.remove("version")
             //VersionChange
-            eachOrder.addProperty("version", "1.0.5")
+            eachOrder.addProperty("version", "1.0.6")
             writeToFile()
         } catch (e:Exception){
             PikaAPI.error("Error in creating/migrating config file.")
