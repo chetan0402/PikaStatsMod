@@ -50,7 +50,7 @@ object PikaAPI {
         return toReturn
     }
 
-    private fun getJson(urlString: String, site: String): JsonObject? {
+    fun getJson(urlString: String, site: String): JsonObject? {
         try {
             val url = URL(urlString)
             val connection = url.openConnection() as HttpsURLConnection

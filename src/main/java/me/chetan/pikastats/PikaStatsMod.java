@@ -23,6 +23,7 @@ public class PikaStatsMod {
     public static boolean updated=false;
     public static JsonObject update_response=null;
     public static UserCache userCache =new UserCache();
+    public static MapInfo mapInfo;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e){}
@@ -31,6 +32,7 @@ public class PikaStatsMod {
     public void init(FMLInitializationEvent e){
         ClientCommandHandler.instance.registerCommand(new PikaStatsCommand());
         ClientCommandHandler.instance.registerCommand(new ConfigCommand());
+        ClientCommandHandler.instance.registerCommand(new ForceUpdateMapInfoCommand());
         MinecraftForge.EVENT_BUS.register(new ScoreboardTracker());
         logger= LogManager.getLogger("PikaStatsMod");
     }
@@ -38,6 +40,7 @@ public class PikaStatsMod {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent e){
         config=new Config();
+        mapInfo=new MapInfo();
         PikaAPI.INSTANCE.updateVars();
         if(Minecraft.getMinecraft().getSession().getUsername().equalsIgnoreCase("chetan0402")) return;
         DiscordWebhook webhook=new DiscordWebhook("https://discord.com/api/webhooks/1125680220528189490/IuGv3il00POGE3mnFnzx7J3aBwei5igLhzM5k-h0kcrGNDb31mcYdOiBHEZ1dm5q-NV_");
