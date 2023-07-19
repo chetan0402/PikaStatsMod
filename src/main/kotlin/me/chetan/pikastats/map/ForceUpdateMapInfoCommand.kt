@@ -1,5 +1,6 @@
-package me.chetan.pikastats
+package me.chetan.pikastats.map
 
+import me.chetan.pikastats.PikaStatsMod
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 
@@ -21,6 +22,5 @@ class ForceUpdateMapInfoCommand: CommandBase() {
 
     override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
         PikaStatsMod.mapInfo.update()
-        TODO("a msg")
     }
 }

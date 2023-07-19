@@ -1,8 +1,10 @@
-package me.chetan.pikastats
+package me.chetan.pikastats.config
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
+import me.chetan.pikastats.PikaAPI
+import me.chetan.pikastats.PikaStatsMod
 import net.minecraft.client.Minecraft
 import java.io.File
 import java.io.IOException
@@ -48,49 +50,46 @@ class Config {
 
     private fun init(type: String) {
         try{
-            when(type.replace("\"","")){
-                "fresh" -> {
-                    orderList.delete()
-                    orderList.createNewFile()
-                    val bwOrder = listOf("Final kills","Kills","Highest winstreak reached","Beds destroyed","Wins","Losses","Games played","Deaths")
-                    val swOrder = listOf("Kills","Wins","Games played","Highest winstreak reached","Losses","Deaths")
-                    val upracOrder = listOf("Wins","Losses","Games played","Kills","Highest winstreak reached")
-                    val rpracOrder = listOf("Elo","Wins","Losses","Games played","Kills","Highest winstreak reached")
-                    eachOrder.remove("bw")
-                    eachOrder.remove("sw")
-                    eachOrder.remove("uprac")
-                    eachOrder.remove("rprac")
-                    eachOrder.addProperty("bw", bwOrder.toString())
-                    eachOrder.addProperty("sw", swOrder.toString())
-                    eachOrder.addProperty("uprac",upracOrder.toString())
-                    eachOrder.addProperty("rprac",rpracOrder.toString())
-                    eachOrder.addProperty("fkdr",true)
-                    eachOrder.addProperty("wlr",true)
-                    eachOrder.addProperty("tab","FKDR")
-                }
-                "1.0.0" -> {
-                    val upracOrder = listOf("Wins","Losses","Games played","Kills","Highest winstreak reached")
-                    val rpracOrder = listOf("Elo","Wins","Losses","Games played","Kills","Highest winstreak reached")
-                    eachOrder.remove("uprac")
-                    eachOrder.remove("rprac")
-                    eachOrder.addProperty("uprac",upracOrder.toString())
-                    eachOrder.addProperty("rprac",rpracOrder.toString())
-                    eachOrder.addProperty("fkdr",true)
-                    eachOrder.addProperty("wlr",true)
-                    eachOrder.addProperty("tab","FKDR")
-                }
-                "1.0.1" -> {
-                    eachOrder.addProperty("fkdr",true)
-                    eachOrder.addProperty("wlr",true)
-                    eachOrder.addProperty("tab","FKDR")
-                }
-                "1.0.2","1.0.3","1.0.4","1.0.5" -> {
-                    eachOrder.addProperty("tab","FKDR")
-                }
+            var typeVersion=type.replace("\"","")
+            if (typeVersion=="fresh"){
+                orderList.delete()
+                orderList.createNewFile()
+                val bwOrder = listOf("Final kills","Kills","Highest winstreak reached","Beds destroyed","Wins","Losses","Games played","Deaths")
+                val swOrder = listOf("Kills","Wins","Games played","Highest winstreak reached","Losses","Deaths")
+                eachOrder.remove("bw")
+                eachOrder.remove("sw")
+                eachOrder.addProperty("bw", bwOrder.toString())
+                eachOrder.addProperty("sw", swOrder.toString())
+                typeVersion="1.0.0"
+            }
+            if (typeVersion=="1.0.0"){
+                val upracOrder = listOf("Wins","Losses","Games played","Kills","Highest winstreak reached")
+                val rpracOrder = listOf("Elo","Wins","Losses","Games played","Kills","Highest winstreak reached")
+                eachOrder.remove("uprac")
+                eachOrder.remove("rprac")
+                eachOrder.addProperty("uprac",upracOrder.toString())
+                eachOrder.addProperty("rprac",rpracOrder.toString())
+                typeVersion="1.0.1"
+            }
+            if (typeVersion=="1.0.1"){
+                eachOrder.addProperty("fkdr",true)
+                eachOrder.addProperty("wlr",true)
+                typeVersion="1.0.2"
+            }
+            if (listOf("1.0.2","1.0.3","1.0.4","1.0.5").contains(typeVersion)){
+                eachOrder.addProperty("tab","FKDR")
+                typeVersion="1.0.6"
+            }
+            // TODO - more config
+            if (typeVersion=="1.0.6"){
+                eachOrder.addProperty("heightx",0)
+                eachOrder.addProperty("heighty",Minecraft.getMinecraft().displayHeight/2)
+                eachOrder.addProperty("resx",Minecraft.getMinecraft().displayWidth)
+                eachOrder.addProperty("resy",Minecraft.getMinecraft().displayHeight)
             }
             eachOrder.remove("version")
             //VersionChange
-            eachOrder.addProperty("version", "1.0.6")
+            eachOrder.addProperty("version", "1.0.7")
             writeToFile()
         } catch (e:Exception){
             PikaAPI.error("Error in creating/migrating config file.")

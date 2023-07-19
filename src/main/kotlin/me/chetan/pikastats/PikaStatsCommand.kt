@@ -39,8 +39,8 @@ class PikaStatsCommand: CommandBase() {
             if (args.isEmpty() || args.size == 1) {
                 PikaAPI.help()
             } else if (2<=args.size){
-                var gamemode=""
-                var otherGamemode=""
+                val gamemode: String
+                val otherGamemode: String
                 when(args[1].lowercase()){
                     "bw","bws","bedwar","bedwars" -> {gamemode="bedwars";otherGamemode="bw"}
                     "sw","sws","skywar","skywars" -> {gamemode="skywars";otherGamemode="sw"}

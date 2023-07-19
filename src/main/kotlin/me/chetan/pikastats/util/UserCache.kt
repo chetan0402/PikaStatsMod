@@ -1,4 +1,7 @@
-package me.chetan.pikastats
+package me.chetan.pikastats.util
+
+import me.chetan.pikastats.PikaAPI
+import me.chetan.pikastats.PikaStatsMod
 
 class UserCache {
     private var bwCache= mutableMapOf<String,Float>()
@@ -7,8 +10,8 @@ class UserCache {
 
     fun getCache(username: String):String{
         if (PikaAPI.tempDisable) return ""
-        val gamemode=ScoreboardTracker.gamemodeForAccess.lowercase().replace("\\s".toRegex(),"")
-        val tabField=PikaStatsMod.config.eachOrder.get("tab").asString.replace("\"","")
+        val gamemode= ScoreboardTracker.gamemodeForAccess.lowercase().replace("\\s".toRegex(),"")
+        val tabField= PikaStatsMod.config.eachOrder.get("tab").asString.replace("\"","")
         if (tabField=="disable") return ""
         var stats=when(gamemode){
             "bedwars" -> bwCache[username]
@@ -16,7 +19,7 @@ class UserCache {
             else -> return ""
         }
         if(stats==null) {
-            val requestThread=requestNode(username, gamemode, tabField)
+            val requestThread= requestNode(username, gamemode, tabField)
             threadList.add(requestThread)
             requestThread.start()
             when(gamemode){
@@ -71,12 +74,12 @@ class UserCache {
         }
 
         override fun run() {
-            val userInfo=PikaAPI.minigames(username,"total","ALL_MODES",gamemode)
+            val userInfo= PikaAPI.minigames(username, "total", "ALL_MODES", gamemode)
             when(field){
-                "FKDR" -> this.stats=PikaAPI.getFkdr(userInfo)
-                "WLR" -> this.stats=PikaAPI.getWLR(userInfo)
+                "FKDR" -> this.stats= PikaAPI.getFkdr(userInfo)
+                "WLR" -> this.stats= PikaAPI.getWLR(userInfo)
                 else -> {
-                    val fieldValue:Float?= PikaAPI.getField(userInfo,field)?.get("value")?.asFloat
+                    val fieldValue:Float?= PikaAPI.getField(userInfo, field)?.get("value")?.asFloat
                     if (fieldValue != null) {
                         this.stats=fieldValue
                     }else{

@@ -1,5 +1,7 @@
-package me.chetan.pikastats
+package me.chetan.pikastats.config
 
+import me.chetan.pikastats.PikaAPI
+import me.chetan.pikastats.PikaStatsMod
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.event.ClickEvent

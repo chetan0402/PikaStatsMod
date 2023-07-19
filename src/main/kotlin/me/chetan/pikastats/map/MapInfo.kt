@@ -1,6 +1,7 @@
-package me.chetan.pikastats
+package me.chetan.pikastats.map
 
 import com.google.gson.JsonObject
+import me.chetan.pikastats.PikaAPI
 
 class MapInfo {
     private var mapResponse:JsonObject= JsonObject()
@@ -10,7 +11,8 @@ class MapInfo {
     }
 
     fun update(){
-        val map=PikaAPI.getJson("https://raw.githubusercontent.com/chetan0402/PikaStatsChecker/master/map.json","github")
+        val map=
+            PikaAPI.getJson("https://raw.githubusercontent.com/chetan0402/PikaStatsChecker/master/map.json", "github")
         if (map==null){
             this.mapResponse=JsonObject()
         }else{
